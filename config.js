@@ -1,23 +1,23 @@
 var config = {
   env: 'development',
   testnet: true,
-  serverName: 'coloredcoinsd',
+  serverName: 'digiassetsd',
   google_api_key: 'AIzaSyBJfxobLSO_IM9tI1ATWpOelVInNuH1kBM',
-  machineurl: 'http://api.coloredcoins.org',
+  machineurl: 'http://testnetapi.digiassets.net',
   useS3: true,
   bitcoind: {
-    host: 'testnet.api.colu.co',
-    port: 80,
-    user: 'admin',
-    pass: '9lpcjZpv221j47zF',
-    path: '/rpc',
+    host: 'localhost',
+    port: 18332,
+    user: 'user',
+    pass: 'password',
+    path: '/',
     timeout: 30000
   },
   blockexplorer: {
-    url: 'https://testnet.explorer.coloredcoins.org'
+    url: 'https://testnet.explorer.digiassets.net'
   },
   torrentServer: {
-    url: 'http://dev.metadata.coloredcoins.org'
+    url: 'http://testnet.metadata.digiassets.net'
   },
   piwik: {
     url: 'https://analytics.colu.co/piwik.php',

@@ -10,7 +10,7 @@ exports.models = {
             "utxos": {
                 "type": "array",
                 "items": {
-                    "$ref": "ccUtxo"
+                    "$ref": "daUtxo"
                 },
                 "description": "Name of the category"
             }

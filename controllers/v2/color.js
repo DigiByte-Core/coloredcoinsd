@@ -7,7 +7,7 @@ module.exports = (function () {
     var Q = require("q");
     var AWS = require("aws-sdk");
     var api = require('../../coluutils.js');
-    var errors = require('cc-errors');
+    var errors = require('digiasset-errors');
 
     var creds = {};
     creds.AWSAKI = process.env.AWSAKI;
@@ -76,7 +76,7 @@ module.exports = (function () {
             'spec': {
                 "description": "",
                 "path": "/broadcast",
-                "notes": "broadcasts a raw transaction to the bitcoin network",
+                "notes": "broadcasts a raw transaction to the digibyte network",
                 "summary": "",
                 "method": "POST",
                 "parameters": [

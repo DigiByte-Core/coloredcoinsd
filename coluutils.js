@@ -7,9 +7,9 @@ module.exports = (function () {
     var crypto = require('crypto')
     var bitcoinjs = require('bitcoinjs-lib')
     var bn = require('bignumber.js')
-    var cc = require('cc-transaction')
-    var errors = require('cc-errors')
-    var assetIdencoder = require('cc-assetid-encoder')
+    var da = require('digiasset-transaction')
+    var errors = require('digiasset-errors')
+    var assetIdencoder = require('digiasset-assetid-encoder')
     var _ = require('lodash')
     var rsa = require('node-rsa')
     var session = require('continuation-local-storage').getNamespace(config.serverName)
@@ -21,7 +21,7 @@ module.exports = (function () {
     creds.AWSAKI = process.env.AWSAKI
     creds.AWSSSK = process.env.AWSSSK
 
-    var CC_TX_VERSION = 0x02
+    var DA_TX_VERSION = 0x02
 
     var client = new Client()
 
@@ -144,8 +144,8 @@ module.exports = (function () {
                 console.log(hex)
                if (check_version(hex)) {
                   console.log('hex: ', hex)
-                 var ccdata = cc.createFromHex(hex).toJson()
-                 ccdata.payments.some(function(payment){
+                 var dadata = da.createFromHex(hex).toJson()
+                 dadata.payments.some(function(payment){
                     if(payment.output != index)
                       isok = true;
                     else
@@ -159,7 +159,7 @@ module.exports = (function () {
 
 var check_version = function (hex) {
    var version = hex.toString('hex').substring(0, 4)
-   if (version.toLowerCase() == '4343') {
+   if (version.toLowerCase() == '4441') {
      return true
    }
    return false
@@ -187,7 +187,7 @@ var get_opreturn_data = function (asm) {
         rpcclient.cmd(batch, function(err){
           if (err) {
              console.log(err);
-              deferred.reject(new Error("Bitcoind: Status code was " + err));
+              deferred.reject(new Error("DigiByted: Status code was " + err));
           }
           else {
             deferred.resolve(arguments[1]);
@@ -264,7 +264,7 @@ data.tx.outs.forEach( function (txOut) {
     function encodeColorScheme(args) {
       var addMultisig = false;
       var metadata = args.metadata
-      var encoder = cc.newTransaction(0x4343, CC_TX_VERSION)
+      var encoder = da.newTransaction(0x4441, DA_TX_VERSION)
       var reedemScripts = []
       var coloredOutputIndexes = []
       var coloredAmount = metadata.amount
@@ -301,7 +301,7 @@ data.tx.outs.forEach( function (txOut) {
       }
 
       if (coloredAmount < 0) {
-        throw new errors.CCTransactionConstructionError({explanation: 'transferring more than issued'})
+        throw new errors.DATransactionConstructionError({explanation: 'transferring more than issued'})
       }
 
       //add op_return
@@ -337,7 +337,7 @@ data.tx.outs.forEach( function (txOut) {
         else if(buffer.leftover && buffer.leftover.length == 2)
               addHashesOutput(args.tx, metadata.pubKeyReturnMultisigDust, buffer.leftover[1], buffer.leftover[0])
         else
-          throw new errors.CCTransactionConstructionError({explanation: 'have hashes and enough room we offested inputs for nothing'})
+          throw new errors.DATransactionConstructionError({explanation: 'have hashes and enough room we offested inputs for nothing'})
 
       }
 
@@ -358,7 +358,7 @@ data.tx.outs.forEach( function (txOut) {
       if (metadata.flags && metadata.flags.splitChange && lastOutputValue >= 2 * config.mindustvalue && coloredAmount > 0) {
         var bitcoinChange = lastOutputValue - config.mindustvalue
         lastOutputValue = config.mindustvalue
-        console.log('adding bitcoin change output with: ' + bitcoinChange)
+        console.log('adding digibyte change output with: ' + bitcoinChange)
         args.tx.addOutput(metadata.issueAddress, bitcoinChange) 
       }
       if (coloredAmount > 0) {
@@ -418,18 +418,18 @@ data.tx.outs.forEach( function (txOut) {
                      }
 
                      var script = {}
-                     if(tx.ccdata[0].multiSig && tx.ccdata[0].multiSig.length > 0) {
+                     if(tx.dadata[0].multiSig && tx.dadata[0].multiSig.length > 0) {
                           script = bitcoinjs.Script.fromHex(tx.vout[0].scriptPubKey.hex)
                           multisignum =  script.chunks.length - 3;
                           console.log('multisignum: ' + multisignum);
                      }
-                     else if(!tx.ccdata[0].torrentHash) {
+                     else if(!tx.dadata[0].torrentHash) {
                         console.log('no metadata anywhere for ' + (i ? 'utxo' : 'issue'))
                         return;
                      }
 
-                     var sha1 = tx.ccdata[0].torrentHash || script.chunks[3]
-                     var sha2 = tx.ccdata[0].sha2 || script.chunks[2]
+                     var sha1 = tx.dadata[0].torrentHash || script.chunks[3]
+                     var sha2 = tx.dadata[0].sha2 || script.chunks[2]
                      hashes.push({sha1: sha1, sha2: sha2})
                      console.log('requesting torrent by hash: ' + sha1)
                      getHashes.push(self.downloadMetadata(sha1))
@@ -1000,7 +1000,7 @@ coluutils.requestParseTx = function requestParseTx(txid)
 
              }
              console.log('reached encoder')
-             var encoder = cc.newTransaction(0x4343, CC_TX_VERSION)
+             var encoder = da.newTransaction(0x4343, DA_TX_VERSION)
             if(!tryAddingInputsForFee(tx, utxos, totalInputs, metadata, satoshiCost)) {
               deferred.reject(new errors.NotEnoughFundsError({
                 type: 'transfer',
@@ -1092,7 +1092,7 @@ coluutils.requestParseTx = function requestParseTx(txid)
                   else if(buffer.leftover.length == 2)
                         addHashesOutput(tx, metadata.pubKeyReturnMultisigDust, buffer.leftover[1], buffer.leftover[0])
                   else
-                    throw new errors.CCTransactionConstructionError({explanation: 'have hashes and enough room we offested inputs for nothing'})
+                    throw new errors.DATransactionConstructionError({explanation: 'have hashes and enough room we offested inputs for nothing'})
               }
 
                // add array of colored ouput indexes
@@ -1151,7 +1151,7 @@ coluutils.requestParseTx = function requestParseTx(txid)
           }) // then
         } // if
         else {
-           deferred.reject(new errors.CCTransactionConstructionError({status: 400, explanation: 'no from address or sendutxo in input'}))
+           deferred.reject(new errors.DATransactionConstructionError({status: 400, explanation: 'no from address or sendutxo in input'}))
         }
       } //try
       catch(e){
@@ -1307,7 +1307,7 @@ coluutils.requestParseTx = function requestParseTx(txid)
 
     function encodeAssetIdInfo(reissueable, txid, nvout, hex, divisibility, aggregationPolicy) {
        var opts = {
-              'ccdata': [{
+              'dadata': [{
                 'type': 'issuance',
                 'lockStatus': !reissueable,
                 'divisibility': divisibility,

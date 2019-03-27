@@ -7,7 +7,7 @@ module.exports = (function () {
     var Q = require("q");
     var AWS = require("aws-sdk");
     var api = require('../../coluutils.js');
-    var errors = require('cc-errors')
+    var errors = require('digiasset-errors')
     var _ = require('lodash')
 
     var creds = {};

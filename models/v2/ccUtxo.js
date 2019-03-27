@@ -1,6 +1,6 @@
 exports.models = {
-    "ccUtxo": {
-        "id": "ccUtxo",
+    "daUtxo": {
+        "id": "daUtxo",
         "required": ["txid", "index", "value", "blockheight", "used" ,"assets", "scriptPubKey"],
         "properties": {
             "index": {

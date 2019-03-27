@@ -5,7 +5,7 @@ var server = require('../server')
 var bitcoinjs = require('bitcoinjs-lib')
 var Transaction = bitcoinjs.Transaction
 var tx = new bitcoinjs.Transaction()
-var cc = require('cc-transaction')
+var da = require('digiasset-transaction')
 
 var get_opreturn_data = function (asm) {
   return asm.substring('OP_RETURN '.length)
@@ -52,11 +52,11 @@ describe ('Api tests', function () {
       var opReturnOut
       decodedTx.outs.forEach(function (out) { if (out.script.toASM().substring(0, 'OP_RETURN'.length) === 'OP_RETURN') opReturnOut = out })
       var opReturnAsm = opReturnOut.script.toASM()
-      var ccTx = cc.fromHex(get_opreturn_data(opReturnAsm))
-      assert.equal(ccTx.type, 'issuance')
-      assert.equal(ccTx.lockStatus, lockStatus)
-      assert.equal(ccTx.aggregationPolicy, aggregationPolicy)
-      assert.equal(ccTx.divisibility, divisibility)
+      var daTx = da.fromHex(get_opreturn_data(opReturnAsm))
+      assert.equal(daTx.type, 'issuance')
+      assert.equal(daTx.lockStatus, lockStatus)
+      assert.equal(daTx.aggregationPolicy, aggregationPolicy)
+      assert.equal(daTx.divisibility, divisibility)
       assert(body.assetId)
       assert.deepEqual(body.coloredOutputIndexes, [0, 2]) // including change
       done();

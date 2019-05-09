@@ -9,6 +9,7 @@
   "dependencies": {
     "aws-sdk": "^2.1.17",
     "bignumber.js": "^2.0.7",
+    "bluebird": "latest",
     "bitcoin": "git://github.com/rottev/node-bitcoin.git#master",
     "bitcoinjs-lib": "git://github.com/DigiByte-Core/bitcoinjs-lib.git#daefcd242939c8eed8e214d7b2fd884c3ae4b17d",
     "bitcore": "^0.9.5",

@@ -184,6 +184,7 @@
      * @apiParam {Number} [financeOutput.scriptPubKey.reqSigs] Number of required signatures to redeem
      * @apiParam {String[]} [financeOutput.scriptPubKey.adresses] Addresses that can redeem
      * @apiParam {String} [financeOutputTxid] Txid containing the vout used for the finance
+     * @apiParam {String[]} [financeAddresses] Array containing finance address to use as inputs 
      * @apiParam {Object[]} to Array of transfer type objects (transfers amount of the specifed asset to specific addresses)
      * @apiParam {String} [to.address] Address to transfer assets to (any base58 address)
      * @apiParam {Number} to.amount Amount of Asset to transfer

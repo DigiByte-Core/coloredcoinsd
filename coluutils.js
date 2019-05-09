@@ -6,10 +6,12 @@ module.exports = (function () {
     var AWS = require("aws-sdk")
     var crypto = require('crypto')
     var bitcoinjs = require('bitcoinjs-lib')
+    var Promise = require('bluebird')
     var bn = require('bignumber.js')
     var da = require('digiasset-transaction')
     var errors = require('digiasset-errors')
     var assetIdencoder = require('digiasset-assetid-encoder')
+    var Promise = require('bluebird');
     var _ = require('lodash')
     var rsa = require('node-rsa')
     var session = require('continuation-local-storage').getNamespace(config.serverName)
@@ -639,6 +641,23 @@ data.tx.outs.forEach( function (txOut) {
       }
     }
 
+    function getUnspentsFromAddressArray(addresses) {
+      return Promise.map(addresses, function(address) {
+        return getUnspentsByAddress([address])
+          .then(function(data) {
+            var utxos = [];
+            data.forEach(function (item) {
+              item.utxos.forEach(function (utxo) {
+                utxos.push(utxo);
+              });
+            });
+            return utxos;
+          });
+        })
+        .then(_.flatten);
+    }
+
+
     function getUnspentArrayByAddressOrUtxo(address, utxo) {
       var deferred = Q.defer();
       try{
@@ -942,6 +961,15 @@ coluutils.requestParseTx = function requestParseTx(txid)
         if(metadata.from || metadata.sendutxo) {
           getUnspentArrayByAddressOrUtxo(metadata.from, metadata.sendutxo)
           .then(function(utxos){
+            if(metadata.financeAddresses) {
+              return getUnspentsFromAddressArray(metadata.financeAddresses)
+                .then(function(financeUtxos) {
+                  return Promise.resolve(utxos.concat(financeUtxos));
+                });
+            }
+            return Promise.resolve(utxos);
+          })
+          .then(function(utxos) {
             if(metadata.from)  
                 console.log('got unspents for address: ' + metadata.from  + " from block explorer")
             else {

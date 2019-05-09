@@ -33,6 +33,13 @@ exports.models = {
                 "type": "string",
                 "description": "txid containing the output used for finance"
             },
+            "financeAddresses": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "description": "Array containing finance addresses to use as inputs "
+            },
             "to": {
                 "type": "array",
                 "items": {

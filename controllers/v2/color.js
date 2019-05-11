@@ -115,8 +115,12 @@ module.exports = (function () {
                 var verbosity = parseInt(req.query.verbosity)
                 verbosity = ([0,1].indexOf(verbosity) > -1)? verbosity : 1
                 api.getAssetMetadata(req.params.assetId, req.params.utxo, verbosity).
-                then(
-                    function(data) { res.status(200).send(data) }, 
+                then(function(data) {
+                    if(data.firstBlock == -1) {
+                        return res.status(401).json({ message: 'Asset not found!' });
+                    }
+                    return res.status(200).send(data);
+                }, 
                     next
                 )
             }

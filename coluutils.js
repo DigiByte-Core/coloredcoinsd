@@ -1028,7 +1028,7 @@ coluutils.requestParseTx = function requestParseTx(txid)
 
              }
              console.log('reached encoder')
-             var encoder = da.newTransaction(0x4343, DA_TX_VERSION)
+             var encoder = da.newTransaction(0x4441, DA_TX_VERSION)
             if(!tryAddingInputsForFee(tx, utxos, totalInputs, metadata, satoshiCost)) {
               deferred.reject(new errors.NotEnoughFundsError({
                 type: 'transfer',

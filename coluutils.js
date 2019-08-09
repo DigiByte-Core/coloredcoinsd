@@ -211,6 +211,9 @@ var get_opreturn_data = function (asm) {
         addInputsForIssueTransaction(tx, metadata).
         then(function(args){
             var txResponse = encodeColorScheme(args);
+            if (config.enableDonations) {
+              args.tx.addOutput(config.donationAddress, config.donationAmount);
+            }
             deferred.resolve({txHex: txResponse.tx.toHex(), assetId: args.assetId || "0", metadata: metadata, multisigOutputs: txResponse.multisigOutputs, coloredOutputIndexes: txResponse.coloredOutputIndexes});
         }).
         catch(function(err) {
@@ -1437,6 +1440,7 @@ coluutils.requestParseTx = function requestParseTx(txid)
     function getTotalIssuenceCost(metaobj, withfee)
     {
         fee = withfee ? config.minfee : 0;
+        fee += config.enableDonations ? config.donationAmount : 0;
       // simple case where there aren't any mints or bill sizes
        // if(!bills && !mints) {
         if(metaobj.transfer && metaobj.transfer.length)
